@@ -16,9 +16,9 @@
         <activity
             android:name=".ResultActivity"
             android:exported="false" />
-        <activity
-            android:name=".ScorePage"
-            android:exported="false" />
+<!--        <activity-->
+<!--            android:name=".ScorePage"-->
+<!--            android:exported="false" />-->
         <activity
             android:name=".QuizQuestionActivity"
             android:exported="false" />

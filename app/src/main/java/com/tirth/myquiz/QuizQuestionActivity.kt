@@ -1,5 +1,6 @@
 package com.tirth.myquiz
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
@@ -44,12 +45,6 @@ class QuizQuestionActivity : AppCompatActivity(), View.OnClickListener{
         tvOptionFour = findViewById(R.id.tvOptionFour)
         btnSubmit = findViewById(R.id.btnSubmit)
 
-        /*val questionList = Constants.getQuestions()
-        Log.i("Questions size is", "${questionList.size}")
-
-        for(i in questionList){
-            Log.e("Questions", i.question)
-        }*/
         tvOptionOne?.setOnClickListener(this)
         tvOptionTwo?.setOnClickListener(this)
         tvOptionThree?.setOnClickListener(this)
@@ -61,9 +56,10 @@ class QuizQuestionActivity : AppCompatActivity(), View.OnClickListener{
         defaultOptionView()
     }
 
-//    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n")
     private fun setQuestion(){
         defaultOptionView()
+        mSelectedOptionPosition = 0
         val question: Question = mQuestionList!![mCurrentPosition - 1]
         ivImage?.setImageResource(question.image)
         progressBar?.progress = mCurrentPosition
@@ -73,16 +69,14 @@ class QuizQuestionActivity : AppCompatActivity(), View.OnClickListener{
         tvOptionTwo?.text = question.optionTwo
         tvOptionThree?.text = question.optionThree
         tvOptionFour?.text = question.optionFour
-
-        if(mCurrentPosition == mQuestionList!!.size){
-            btnSubmit?.text = "FINISH"
-        }
-        else{
-            btnSubmit?.text = "SUBMIT"
-        }
+        btnSubmit?.text = "SUBMIT"
     }
-//
+
     private fun defaultOptionView(){
+        tvOptionOne?.isEnabled = true
+        tvOptionTwo?.isEnabled = true
+        tvOptionThree?.isEnabled = true
+        tvOptionFour?.isEnabled = true
         val options = ArrayList<TextView>()
         tvOptionOne?.let{
             options.add(0,it)
@@ -141,23 +135,26 @@ class QuizQuestionActivity : AppCompatActivity(), View.OnClickListener{
                 }
             }
             R.id.btnSubmit ->{
-                if(mSelectedOptionPosition == 0) {
+                if(btnSubmit?.text == "GO TO NEXT QUESTION")
+                {
                     mCurrentPosition++
-
-                    when {
-                        mCurrentPosition <= mQuestionList!!.size -> {
-                            setQuestion()
-                        }
-                        else -> {
-                            val intent = Intent(this, ResultActivity::class.java)
-                            intent.putExtra(Constants.USER_NAME, mUserName)
-                            intent.putExtra(Constants.CORRECT_ANSWER, mCorrectAnswers)
-                            intent.putExtra(Constants.TOTAL_QUESTIONS, mQuestionList?.size)
-                            startActivity(intent)
-                            finish()
-                        }
-                    }
-                }else{
+                    setQuestion()
+                }
+                else if(btnSubmit?.text == "FINISH")
+                {
+                    val intent = Intent(this, ResultActivity::class.java)
+                    intent.putExtra(Constants.USER_NAME, mUserName)
+                    intent.putExtra(Constants.CORRECT_ANSWER, mCorrectAnswers)
+                    intent.putExtra(Constants.TOTAL_QUESTIONS, mQuestionList?.size)
+                    startActivity(intent)
+                    finish()
+                }
+                else if(mSelectedOptionPosition == 0)
+                {
+                    Toast.makeText(this, "Please select an option", Toast.LENGTH_SHORT).show()
+                }
+                else
+                {
                     val question = mQuestionList?.get(mCurrentPosition-1)
                     if(question!!.correctAnswer != mSelectedOptionPosition){
                         answerView(mSelectedOptionPosition, R.drawable.wrong_answer_border_bg)
@@ -166,12 +163,16 @@ class QuizQuestionActivity : AppCompatActivity(), View.OnClickListener{
                     }
                     answerView(question.correctAnswer, R.drawable.correct_answer_border_bg)
 
+                    tvOptionOne?.isEnabled = false
+                    tvOptionTwo?.isEnabled = false
+                    tvOptionThree?.isEnabled = false
+                    tvOptionFour?.isEnabled = false
+
                     if(mCurrentPosition == mQuestionList!!.size){
-                         btnSubmit?.text = "FINISH"
+                        btnSubmit?.text = "FINISH"
                     }else{
                         btnSubmit?.text = "GO TO NEXT QUESTION"
                     }
-                    mSelectedOptionPosition = 0
                 }
             }
         }

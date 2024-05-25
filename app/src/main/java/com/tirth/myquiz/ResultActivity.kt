@@ -14,16 +14,24 @@ class ResultActivity : AppCompatActivity() {
 
         val tvName: TextView =  findViewById(R.id.tvResultName)
         val tvScore: TextView = findViewById(R.id.tvScore)
-        val btnFinish: Button = findViewById(R.id.btnFinish)
+        val btnHome: Button = findViewById(R.id.btnHome)
+        val tvCongratulations: TextView = findViewById(R.id.tvCongratulations)
 
         val userName = intent.getStringExtra(Constants.USER_NAME)
         val totalQuestions = intent.getIntExtra(Constants.TOTAL_QUESTIONS, 7)
         val correctAnswers = intent.getIntExtra(Constants.CORRECT_ANSWER, 0)
 
+        if(correctAnswers < 3)
+        {
+            tvCongratulations.text = "You need to work harder!"
+        }else if(correctAnswers > 3 && correctAnswers < 6)
+        {
+            tvCongratulations.text = "You could have done better!"
+        }
         tvName.text = userName
-        tvScore.text = "You Scored $correctAnswers out of $totalQuestions"
+        tvScore.text = "Scored $correctAnswers out of $totalQuestions"
 
-        btnFinish.setOnClickListener{
+        btnHome.setOnClickListener{
             startActivity(Intent(this,MainActivity::class.java))
             finish()
         }
